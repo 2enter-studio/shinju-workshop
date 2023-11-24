@@ -1,4 +1,7 @@
-*.mp4
+mp4/*
+json/*
+images/*
+txt/*
 
 # Logs
 logs
