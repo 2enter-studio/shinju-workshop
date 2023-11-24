@@ -31,12 +31,24 @@ export const get_video_filenames = () => {
 	});
 };
 
-export const write_json_data = (video: string, data: number[][][]) => {
-	fs.writeFileSync(`./json/${video}.json`, JSON.stringify({ data }, null, 4));
-	console.log(`Saved json data to ./json/${video}.json`);
+export const write_json_data = (
+	video: string,
+	grid: { row: number; col: number },
+	data: number[][][]
+) => {
+	const { row, col } = grid;
+	const output_file = `./json/${video}_${row}x${col}.json`;
+	fs.writeFileSync(output_file, JSON.stringify({ data }, null, 4));
+	console.log(`Saved json data to ${output_file}`);
 };
 
-export const write_pure_string_data = (video: string, data: number[][][]) => {
+export const write_pure_string_data = (
+	video: string,
+	grid: { row: number; col: number },
+	data: number[][][]
+) => {
+	const { row, col } = grid;
+	const output_file = `./txt/${video}_${row}x${col}.txt`;
 	const pure_string = data
 		.map((frame) => {
 			return frame
@@ -46,7 +58,6 @@ export const write_pure_string_data = (video: string, data: number[][][]) => {
 				.join(',');
 		})
 		.join('.');
-	console.log(pure_string.split('.').length);
-	fs.writeFileSync(`./txt/${video}.txt`, pure_string);
-	console.log(`Saved pure string data to ./txt/${video}.txt`);
+	fs.writeFileSync(output_file, pure_string);
+	console.log(`Saved pure string data to ${output_file}`);
 };

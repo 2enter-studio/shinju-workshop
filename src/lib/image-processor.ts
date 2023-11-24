@@ -70,10 +70,12 @@ export class ImageSeq {
 	frame_count: number;
 	time_start: number = 0;
 	time_end: number = 0;
+	grid: { row: number; col: number } = { row: 0, col: 0 };
+
 	constructor(video_name: string) {
 		this.video_name = video_name;
 		this.frame_count = get_frame_count(video_name);
-		if (this.frame_count > 300) this.frame_count = 300;
+		if (this.frame_count > max_frame) this.frame_count = max_frame;
 	}
 
 	async load() {
@@ -91,24 +93,29 @@ export class ImageSeq {
 		const values: number[][][] = [];
 		for (const frame of this.frames) {
 			values.push(frame.get_all_pixel_values());
+			this.grid = frame.grid;
 			replace_latest_log(`Processed ${values.length}/${this.frame_count} frames`);
 		}
 		this.time_end = Date.now();
 		const period = (this.time_end - this.time_start) / 1000;
-		const { row, col } = this.frames[0].grid;
+		const { row, col } = this.grid;
 
 		console.log(`\nGenerated image sequence for video ${this.video_name}:`);
+		console.log('----------------------');
 		console.log(`Total frames:\t${this.frames.length}`);
 		console.log(`Pixels per img:\t${row}x${col}=${row * col}`);
 		console.log(`Cost time:\t${period} seconds`);
+		console.log('----------------------');
 
 		return values;
 	};
 
 	calc_json_data_and_save = () => {
-		write_json_data(this.video_name, this.get_all_pixel_values());
+		const value = this.get_all_pixel_values();
+		write_json_data(this.video_name, this.grid, value);
 	};
 	calc_pure_string_data_and_save = () => {
-		write_pure_string_data(this.video_name, this.get_all_pixel_values());
+		const value = this.get_all_pixel_values();
+		write_pure_string_data(this.video_name, this.grid, value);
 	};
 }
